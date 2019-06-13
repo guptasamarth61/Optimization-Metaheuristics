@@ -1,0 +1,114 @@
+## Text Pattern Recognition using Genetic Algorithm
+import numpy as np
+import random as rdm
+from random import randint
+import matplotlib.pyplot as plt
+
+# initialise an individual and target
+target="gkjdndjhnjdhndhngfkrsdfgkrgjgrekhruehkusrhdlubsgop"
+pop_size=50
+loop=600
+
+def initialise():
+	pop=[]
+	for i in range(0,pop_size):
+		length=0
+		ind=''
+		while(length<len(target)):
+			ind=ind+(chr(randint(97,122)))
+			length=length+1
+		pop.append(ind)
+	return pop
+
+# define fitness function
+def fitness2(pop1):
+	fitness1=[]
+	for i in range (0,pop_size):
+		fit1=0
+		word=pop1[i]
+		for j in range(0,len(target)):
+			if(word[j]==target[j]):
+				fit1+=1
+		fitness1.append(fit1)
+	mean_fit1=np.sum(fitness1)/pop_size
+	max_fit1=np.max(fitness1)
+	return fitness1, mean_fit1, max_fit1
+
+# selection operator
+def selected2(fitness1,mean_fit1,pop1):
+	selected1=[]
+	#select best fitness parents
+	for i in range(0,pop_size):
+		if fitness1[i]>mean_fit1:
+			selected1.append(pop1[i])
+	#select some random parents
+	for i in range(0,randint(0,len(selected1))):
+		if fitness1[i]<mean_fit1:
+			selected1.append(pop1[i])
+	return selected1
+
+# mutation operator
+def mutate2(selected1):
+	mutate_prob=0.05
+	selected_mutate1=[]
+	for i in range(0,len(selected1)):
+		if ((rdm.uniform(0,1))*100<50):
+			word=selected1[i]
+			pos_mutate=randint(0,len(word)-1)
+			word=word[:pos_mutate]+chr(randint(97,122))+word[pos_mutate+1:]
+			selected_mutate1.append(word)
+		elif ((rdm.uniform(0,1))*100 >= 50):
+			selected_mutate1.append(selected[i])
+	return selected_mutate1
+
+# crossover operator
+def children2(selected1):
+	len_child=pop_size-len(selected1)
+	children1=[]
+	for i in range(0,len_child):
+		father=selected1[int(rdm.uniform(0,1)*len(selected1))]
+		mother=selected1[int(rdm.uniform(0,1)*len(selected1))]
+		child=''
+		for j in range(0,len(selected1[0])):
+			if ((rdm.uniform(0,1))*100<50):
+				child+=father[j]
+			else:
+				child+=mother[j]
+		children1.append(child)
+	return children1
+
+# new generation operator
+def new_gen2(selected1,children1):
+	new_gen1=[]
+	new_gen1.extend(selected1)
+	new_gen1.extend(children)
+	return new_gen1
+
+# final loop
+pop=initialise()
+mean_fit_sol=[]
+best_fit_sol=[]
+iteration=[]
+for i in range (0, loop):
+	fitness,mean_fit,max_fit=fitness2(pop)
+	selected=selected2(fitness,mean_fit,pop)
+	selected_mutate=mutate2(selected)
+	children=children2(selected_mutate)
+	new_gen=new_gen2(selected_mutate,children)
+	pop=new_gen
+	mean_fit_sol.append(mean_fit)
+	best_fit_sol.append(max_fit)
+	iteration.append(i)
+
+# to plot graph
+print(len(target))
+print(max(best_fit_sol))
+plt.plot(iteration,mean_fit_sol,label='mean')
+plt.plot(iteration,best_fit_sol,color='r',label='best')
+plt.grid()
+plt.xlabel("No of iterations")
+plt.ylabel("Fitness value")
+plt.title("Fitness curve of best and mean values of population")
+plt.ylim((0,len(target)+0.5))
+plt.legend()
+plt.show()
