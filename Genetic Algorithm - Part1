@@ -1,0 +1,117 @@
+import numpy as np
+from random import randint
+import matplotlib.pyplot as plt
+size = 5
+
+# define population
+def pop_gen():
+	pop1=[]
+	for j in range(0,size):
+		ind1=[]
+		for i in range(0,10):
+			ind1.append(randint(0,1))
+			pop1.append(ind1)
+	return pop1
+
+
+# to check constraint criteria
+def constraint1(pop1):
+	pop2=[]
+	for i in range(0,size):
+		ind1=pop1[i]
+		sum1=0
+		for j in range(0,10):
+			sum1+=ind1[j]
+		while(sum1 > constraint):
+			pos_to_change=randint(0,9)
+			ind1[pos_to_change]=randint(0,1)
+			sum1=0
+			for k in range(0,10):
+				sum1+=ind1[k]
+		pop2.append(ind1)
+	return pop2
+
+# to evaluate fitness criterion
+def fitness1(pop1):
+	fit1=[]
+	for i in range(0,size):
+		ind1=pop1[i]
+		sum1=0
+		for j in range(0,10):
+			sum1=sum1+bestness[j]*ind1[j]
+		fit1.append(sum1)
+		mean_fit1=np.sum(fit1)/size
+		best_fit1=np.max(fit1)
+	return fit1, mean_fit1, best_fit1
+
+# for selection operator
+def selection1(pop1, fit1,mean_fit1):
+	selected1=[]
+	for i in range(0,size):
+		if fit1[i]>=mean_fit1:
+			selected1.append(pop1[i])
+	return selected1
+
+# defining mutatation operator
+def mutate1(parent1):
+	pos_to_mutate=randint(0,len(parent1)-1)
+	ind1=parent1[pos_to_mutate]
+	parent1.remove(ind1)
+	index_mut=randint(0,9)
+	for j in range(index_mut,10):
+		if ind1[j]==0:
+			ind1[j]=1
+		else:
+			ind1[j]=0
+	parent1.append(ind1)
+	return parent1
+
+# define breeding operator to produce children
+def crossover1(mutate2):
+	children2=[]
+	len_child=size-len(mutate2)
+	for i in range(0,len_child):
+		father=mutate2[int(rdm.uniform(0,1)*(len(mutate2)-1))]
+		mother=mutate2[int(rdm.uniform(0,1)*(len(mutate2)-1))]
+		crossover_point=randint(3,7) 
+		child1=[]
+		for j in range (0,crossover_point):
+			child1.append(father[j])
+		for k in range (crossover_point,10):
+			child1.append(mother[k])
+			children2.append(child1)
+	return children2
+
+# defining new generation
+def new_gen2(parent3,children3):
+	new_gen1=[]
+	new_gen1.extend(parent3)
+	new_gen1.extend(children3)
+	return new_gen1
+
+# final loop to update successive generations
+pop_old=pop_gen()
+mean_fit_sol=[]
+best_fit_sol=[]
+iteration=[]
+for i in range (0,500):
+	pop=constraint1(pop_old)
+	fitness,mean_fit,max_fit=fitness1(pop)
+	parent=selection1(pop,fitness,mean_fit)
+	parent_breed=mutate1(parent)
+	children=crossover1(parent_breed)
+	new_gen=new_gen2(parent_breed,children)
+	pop_old=new_gen
+	mean_fit_sol.append(mean_fit)
+	best_fit_sol.append(max_fit)
+	iteration.append(i)
+
+# to plot graph
+print(max(best_fit_sol))
+plt.plot(iteration,mean_fit_sol,label='mean')
+plt.plot(iteration,best_fit_sol,label='best')
+plt.grid()
+plt.legend()
+plt.xlabel("iteration")
+plt.ylabel("Values")
+plt.title("Fitness value with successive iterations")
