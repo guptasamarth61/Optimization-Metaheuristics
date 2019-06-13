@@ -1,0 +1,100 @@
+# Function Optimization using PSO:
+import numpy as np
+import matplotlib.pyplot as plt
+import random as rdm
+
+d = #specify
+length = #specify
+minimum = #specify
+maximum = #specify
+
+# Initialization of randomly scaled position:
+x = np. zeros ((length, d))
+def pos_scale():
+	for i in range(0,length):
+		for j in range(0,d):
+			x[i][j]=minimum+np.random.uniform()*(maximum-minimum)
+	return x
+
+# Evaluation of fitness:
+def fitness(k):
+	f=[]
+	for i in range(0,length):
+		s=0
+		for j in range(0,d):
+			y=k[i][j]
+		s+=y**2
+	f.append(s)
+	return f
+
+
+# Generation of velocity vector:
+def vel_vec():
+	v=np.zeros((length,d))
+	for i in range(0,length):
+		for j in range (0,d):
+			v[i][j]=np.random.uniform()
+	return v
+
+# Final loop to calculate optimized solution:
+pos=pos_scale()
+vel=vel_vec()
+fit_best_store=[]
+
+#to initialise pbest
+lbest=pos
+lbest_fit=fitness(lbest)
+pos_fit=fitness(pos)
+
+#to initialise gbest
+gbest=np.zeros((1,d))
+gbest_fit=np.inf
+for i in range (0,length):
+	if pos_fit[i]<gbest_fit:
+		gbest_fit=pos_fit[i]
+		for j in range(0,d):
+			gbest[0][j] = pos[i][j]
+for n in range (0, loop, loop_cng):
+	for i in range(0,length):
+		for j in range (0, d):
+			#to update velocity
+			r1=rdm.random()
+			r2=rdm.random()
+			vel[i][j] =0.75*vel[i][j]+c1*r1*(lbest[i][j]-pos[i][j])+c2*r2*(gbest[0][j])
+	
+			#to update position
+			pos[i][j]=pos[i][j]+vel[i][j]
+			if pos[i][j]<minimum:
+				pos[i][j]=minimum
+			if pos[i][j]>maximum:
+				pos[i][j]=maximum
+
+		#to find lbest
+		pos_fit=fitness(pos)
+		lbest_fit=fitness(lbest)
+		for i in range (0, length):
+			if pos_fit[i]<lbest_fit[i]:
+				lbest_fit[i]=pos_fit[i]
+			for j in range(0,d):
+				lbest[i][j]=pos[i][j]
+		
+		#to find gbest
+		for i in range (0,length):
+			if lbest_fit[i]<gbest_fit:
+				gbest_fit=lbest_fit[i]
+			for j in range(0,d):
+				gbest[0][j]=lbest[i][j]
+
+	#to store value of best fitness function
+	fit_best_store. append (gbest_fit)
+
+# Code to plot Graphs
+iteration=[]
+for i in range (0, loop, loop_cng):
+	iteration.append(i)
+plt.plot(iteration,fit_best_store)
+plt.xlabel("No of iterations")
+plt.ylabel("Fitness value")
+plt.title("Convergence curve of a 2 variable function")
+plt.grid()
+plt.show()
